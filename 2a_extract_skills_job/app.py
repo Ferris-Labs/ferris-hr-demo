@@ -1,6 +1,8 @@
 import os
 import json
-from langchain.openai import OpenAICompletion
+from langchain.llms import OpenAI
+from langchain.chains import LLMChain
+from langchain.prompts import PromptTemplate
 from ferris_ef import context
 
 job_name = context.params.get("job_name")
@@ -11,29 +13,31 @@ location = context.params.get("location")
 # Setup LangChain with OpenAI API
 # openai_api_key = os.getenv("OPENAI_API_KEY")
 openai_api_key = "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"
-openai_completion = OpenAICompletion(api_key=openai_api_key)
+llm = OpenAI(api_key=openai_api_key)
 
-# Function to extract and classify skills
-def extract_and_classify_skills(text):
-    prompt = f"Extract and classify the skills from the following job description into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum once in either category. Ensure that results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text:\n\n{text}"
-    response = openai_completion.complete(prompt)
-    return response.choices[0].text.strip()
+# Define the prompt template
+template = "Extract and classify the skills from the following job description into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum once in either category. Ensure that results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text:\n\n{job_description}"
+prompt = PromptTemplate(template=template, input_variables=["job_description"])
+
+# Create the chain
+llm_chain = LLMChain(prompt=prompt, llm=llm)
 
 # Retrieve job profile text from the environment
-job_profile_text = context.params.get("job_url") + context.params.get("job_file") + context.params.get("job_text") 
+job_profile_text = context.params.get("job_url") + context.params.get("job_file") + context.params.get("job_text")
 
-# Extract and classify skills
-extracted_skills = extract_and_classify_skills(job_profile_text)
+# Run the chain
+response = llm_chain.run({"job_description": job_profile_text})
+extracted_skills = response.output.strip()
 
-# Parse the response into hard skills, soft skills, and language skills
-# Assuming the model's response is formatted accordingly
-job_skills_dict = json.loads(extracted_skills)
+# Assuming the model's response is formatted as a JSON string
+skills_dict = json.loads(extracted_skills)
 
 # Create extended JSON dictionary
 data = {
-    "job_hard_skills": job_skills_dict.get("hard_skills", []),
-    "job_soft_skills": job_skills_dict.get("soft_skills", []),
-    "job_language_skills": job_skills_dict.get("language_skills", [])
+    "job": job_name,
+    "job_hard_skills": skills_dict.get("hard_skills", []),
+    "job_soft_skills": skills_dict.get("soft_skills", []),
+    "job_language_skills": skills_dict.get("language_skills", [])
 }
 
 if data["job_hard_skills"] or data["job_soft_skills"] or data["job_language_skills"]:
@@ -41,10 +45,7 @@ if data["job_hard_skills"] or data["job_soft_skills"] or data["job_language_skil
         "hr_job_extract",
         context.package.name,
         {
-            "job": job_name,
-            "job_hard_skills": data["job_hard_skills"],
-            "job_soft_skills": data["job_soft_skills"],
-            "job_language_skills": data["job_language_skills"],
+            data
         }
     )
     print("Job profiling step completed, Trigger Event: hr_coverage_ratio")
