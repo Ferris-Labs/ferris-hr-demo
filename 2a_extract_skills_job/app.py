@@ -1,8 +1,6 @@
 import os
 import json
-from langchain_community.llms import OpenAI
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
+import openai
 from ferris_ef import context
 
 job_name = context.params.get("job_name")
@@ -13,21 +11,22 @@ location = context.params.get("location")
 # Setup LangChain with OpenAI API
 # openai_api_key = os.getenv("OPENAI_API_KEY")
 openai_api_key = "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"
-llm = OpenAI(api_key=openai_api_key)
 
-# Define the prompt template
-template = "Extract and classify the skills from the following job description into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum once in either category. Ensure that results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text:\n\n{job_description}"
-prompt = PromptTemplate(template=template, input_variables=["job_description"])
-
-# Create the chain
-llm_chain = LLMChain(prompt=prompt, llm=llm)
+# Function to extract and classify skills
+def extract_and_classify_skills(text):
+    prompt = f"Extract and classify the skills from the following job description into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum once in either category. Ensure that results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text:\n\n{text}"
+    response = openai.Completion.create(
+        engine="text-davinci-003",  # or another appropriate model
+        prompt=prompt,
+        max_tokens=250  # Adjust as necessary
+    )
+    return response.choices[0].text.strip()
 
 # Retrieve job profile text from the environment
 job_profile_text = context.params.get("job_url") + context.params.get("job_file") + context.params.get("job_text")
 
-# Run the chain
-response = llm_chain.run({"job_description": job_profile_text})
-extracted_skills = response.output.strip()
+# Extract and classify skills
+extracted_skills = extract_and_classify_skills(job_profile_text)
 
 # Assuming the model's response is formatted as a JSON string
 skills_dict = json.loads(extracted_skills)
@@ -60,5 +59,5 @@ else:
             "job_parsed_text": job_profile_text,
         }
     )
-    
+
     print("Could not extract skills from Job input")
