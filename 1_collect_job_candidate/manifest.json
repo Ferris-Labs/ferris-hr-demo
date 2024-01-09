@@ -1,0 +1,9 @@
+{
+  "description": "Collect parameters / input for job and candidate",
+  "execution_order": ["app.py"],
+  "allow_manual_triggering": true,
+  "active": true,
+  "tags": ["HRTech", "LLM", "Skills"],
+  "trigger_events": [],
+  "output_events": ["hr_job_cand_params"]
+}

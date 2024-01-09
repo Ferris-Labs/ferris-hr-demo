@@ -1,0 +1,62 @@
+{
+  "fields": [
+    {
+      "type": "text",
+      "label": "Job Name",
+      "name": "jobname",
+      "required": true,
+      "default": "Head of Digital Transformation",
+      "description": "Full name of the job to be classified"
+    },
+    {
+      "type": "text",
+      "label": "Job URL",
+      "name": "joburl",
+      "required": false,
+      "description": "URL for the job to be classified"
+    },
+    {
+      "type": "file",
+      "label": "Job File",
+      "name": "jobfile",
+      "required": false,
+      "description": "Uploaded file for job to be classified"
+    },
+    {
+      "type": "textarea",
+      "label": "Job Description",
+      "name": "jobtext",
+      "required": false,
+      "description": "Full text copy of the job description (plain text)"
+    },
+    {
+      "type": "text",
+      "label": "Candidate Name",
+      "name": "candname",
+      "required": true,
+      "default": "Thommy S. Tulpe",
+      "description": "Full name of the candidate to be classified"
+    },
+    {
+      "type": "text",
+      "label": "Candidate URL",
+      "name": "candurl",
+      "required": false,
+      "description": "URL for the candidate to be classified (e.g. LinkedIn Profile)"
+    },
+    {
+      "type": "file",
+      "label": "Candidate File",
+      "name": "candfile",
+      "required": false,
+      "description": "Uploaded file for candidate to be classified"
+    },
+    {
+      "type": "textarea",
+      "label": "Candidate CV",
+      "name": "candtext",
+      "required": false,
+      "description": "Full text copy of the candidate CV (as plain text)"
+    }
+  ]
+}
