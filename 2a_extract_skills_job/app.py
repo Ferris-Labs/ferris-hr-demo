@@ -4,9 +4,9 @@ import openai
 from ferris_ef import context
 
 job_name = context.params.get("job_name")
-company_name = context.params.get("companyname")
-man_url = context.params.get("profile_url")
-location = context.params.get("location")
+company_name = context.params.get("companyname") or ""
+man_url = context.params.get("profile_url") or ""
+location = context.params.get("location") or ""
 
 # Setup LangChain with OpenAI API
 # openai_api_key = os.getenv("OPENAI_API_KEY")
