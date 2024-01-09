@@ -1,6 +1,6 @@
 import os
 import json
-from langchain.llms import OpenAI
+from langchain_community.llms import OpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from ferris_ef import context
