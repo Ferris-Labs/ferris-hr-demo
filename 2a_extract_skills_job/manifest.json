@@ -1,0 +1,9 @@
+{
+  "description": "Extract skills from Job text",
+  "execution_order": ["app.py"],
+  "allow_manual_triggering": true,
+  "active": true,
+  "tags": ["HRTech", "LLM", "Skills"],
+  "trigger_events": ["hr_job_cand_params"],
+  "output_events": ["hr_job_extract"]
+}
