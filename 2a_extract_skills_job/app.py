@@ -15,12 +15,11 @@ openai_api_key = "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"
 # Function to extract and classify skills
 def extract_and_classify_skills(text):
     prompt = f"Extract and classify the skills from the following job description into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum once in either category. Ensure that results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text:\n\n{text}"
-    response = openai.Completion.create(
-        engine="text-davinci-003",  # or another appropriate model
-        prompt=prompt,
-        max_tokens=250  # Adjust as necessary
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # Adjust the model as necessary
+        messages=[{"role": "system", "content": prompt}]
     )
-    return response.choices[0].text.strip()
+    return response['choices'][0]['message']['content']
 
 # Concat job profile text from the environment params
 job_profile_text = job_url + job_file + job_text
