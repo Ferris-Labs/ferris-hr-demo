@@ -29,21 +29,17 @@ extracted_skills = extract_and_classify_skills(job_profile_text)
 
 # Assuming the model's response is formatted as a JSON string
 skills_dict = json.loads(extracted_skills)
-
-# Create extended JSON dictionary
-data = {
-    "job": job_name,
-    "job_hard_skills": skills_dict.get("hard_skills", []),
-    "job_soft_skills": skills_dict.get("soft_skills", []),
-    "job_language_skills": skills_dict.get("language_skills", [])
-}
+print(skills_dict)
 
 if data["job_hard_skills"] or data["job_soft_skills"] or data["job_language_skills"]:
     context.events.send(
         "hr_job_extract",
         context.package.name,
         {
-            data
+            "job": job_name,
+            "job_hard_skills": skills_dict.get("hard_skills", []),
+            "job_soft_skills": skills_dict.get("soft_skills", []),
+            "job_language_skills": skills_dict.get("language_skills", [])
         }
     )
     print("Job profiling step completed, Trigger Event: hr_coverage_ratio")
