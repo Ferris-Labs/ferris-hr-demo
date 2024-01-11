@@ -31,7 +31,7 @@ extracted_skills = extract_and_classify_skills(job_profile_text)
 skills_dict = json.loads(extracted_skills)
 print(skills_dict)
 
-if data["job_hard_skills"] or data["job_soft_skills"] or data["job_language_skills"]:
+if skills_dict["job_hard_skills"] or skills_dict["job_soft_skills"] or skills_dict["job_language_skills"]:
     context.events.send(
         "hr_job_extract",
         context.package.name,
