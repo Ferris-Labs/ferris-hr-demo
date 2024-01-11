@@ -18,7 +18,7 @@ def extract_and_classify_skills(text):
     response = client.chat.completions.create(model="gpt-3.5-turbo",  # Adjust the model as necessary (e.g. gpt-3.5-turbo)
     messages=[{"role": "system", "content": prompt}])
     # Accessing the last message in the completion which contains the response
-    last_message = response['choices'][0]['message']['content']
+    last_message = response.choices[0].message.content
     return last_message
 
 # Concat job profile text from the environment params
