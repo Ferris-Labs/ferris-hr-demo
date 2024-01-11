@@ -10,17 +10,16 @@ job_text = context.params.get("job_text") or ""
 
 # Setup LangChain with OpenAI API
 oai_key = context.config.get('OPENAI_API_KEY')
-# openai_api_key = "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"
 client = OpenAI(api_key=oai_key)
-
-
 
 # Function to extract and classify skills
 def extract_and_classify_skills(text):
     prompt = f"Extract and classify the skills from the following job description into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum once in either category. Ensure that results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text:\n\n{text}"
     response = client.chat.completions.create(model="gpt-3.5-turbo",  # Adjust the model as necessary (e.g. gpt-3.5-turbo)
     messages=[{"role": "system", "content": prompt}])
-    return response['choices'][0]['message']['content']
+    # Accessing the last message in the completion which contains the response
+    last_message = response.choices[0].messages[-1]
+    return last_message['content']
 
 # Concat job profile text from the environment params
 job_profile_text = job_url + job_file + job_text
