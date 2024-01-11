@@ -12,6 +12,15 @@ job_text = context.params.get("job_text") or ""
 oai_key = context.config.get('OPENAI_API_KEY')
 client = OpenAI(api_key=oai_key)
 
+
+def normalize_keys(data):
+    """Normalize keys in a dictionary to lowercase with underscores."""
+    normalized_data = {}
+    for key, value in data.items():
+        normalized_key = key.lower().replace(" ", "_")
+        normalized_data[normalized_key] = value
+    return normalized_data
+
 # Function to extract and classify skills
 def extract_and_classify_skills(text):
     prompt = f"Extract and classify the skills from the following job description into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum once in either category. Ensure that results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text:\n\n{text}"
@@ -26,20 +35,19 @@ job_profile_text = job_url + job_file + job_text
 
 # Extract and classify skills
 extracted_skills = extract_and_classify_skills(job_profile_text)
+skills_dict = normalize_keys(json.loads(extracted_skills))
 
-# Assuming the model's response is formatted as a JSON string
-skills_dict = json.loads(extracted_skills)
 print(skills_dict)
 
-if skills_dict.get("Hard Skills", []) or skills_dict.get("Soft Skills", []) or skills_dict.get("Language Skills", []):
+if skills_dict.get("hard_skills", []) or skills_dict.get("soft_skills", []) or skills_dict.get("language_skills", []):
     context.events.send(
         "hr_job_extract",
         context.package.name,
         {
             "job": job_name,
-            "job_hard_skills": skills_dict.get("Hard Skills", []),
-            "job_soft_skills": skills_dict.get("Soft Skills", []),
-            "job_language_skills": skills_dict.get("Language Skills", [])
+            "job_hard_skills": skills_dict.get("hard_skills", []),
+            "job_soft_skills": skills_dict.get("soft_skills", []),
+            "job_language_skills": skills_dict.get("language_skills", [])
         }
     )
     print("Job profiling step completed, Trigger Event: hr_coverage_ratio")
