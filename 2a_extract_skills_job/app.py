@@ -31,15 +31,15 @@ extracted_skills = extract_and_classify_skills(job_profile_text)
 skills_dict = json.loads(extracted_skills)
 print(skills_dict)
 
-if skills_dict.get("hard_skills", []) or skills_dict.get("soft_skills", []) or skills_dict.get("language_skills", []):
+if skills_dict.get("hard skills", []) or skills_dict.get("soft skills", []) or skills_dict.get("language skills", []):
     context.events.send(
         "hr_job_extract",
         context.package.name,
         {
             "job": job_name,
-            "job_hard_skills": skills_dict.get("hard_skills", []),
-            "job_soft_skills": skills_dict.get("soft_skills", []),
-            "job_language_skills": skills_dict.get("language_skills", [])
+            "job_hard_skills": skills_dict.get("hard skills", []),
+            "job_soft_skills": skills_dict.get("soft skills", []),
+            "job_language_skills": skills_dict.get("language skills", [])
         }
     )
     print("Job profiling step completed, Trigger Event: hr_coverage_ratio")
