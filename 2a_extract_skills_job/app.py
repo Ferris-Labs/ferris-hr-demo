@@ -18,7 +18,7 @@ client = OpenAI(api_key=oai_key)
 # Function to extract and classify skills
 def extract_and_classify_skills(text):
     prompt = f"Extract and classify the skills from the following job description into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum once in either category. Ensure that results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text:\n\n{text}"
-    response = client.chat.completions.create(model="text-davinci-004",  # Adjust the model as necessary (e.g. gpt-3.5-turbo)
+    response = client.chat.completions.create(model="gpt-3.5-turbo",  # Adjust the model as necessary (e.g. gpt-3.5-turbo)
     messages=[{"role": "system", "content": prompt}])
     return response['choices'][0]['message']['content']
 
