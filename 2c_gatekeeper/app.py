@@ -27,19 +27,16 @@ def main():
 
     # Retrieve the incoming event type A
     incoming_event = context.params.get('ferris.apps.hr.job_extract')
-    if incoming_event:
-        data = {
-            "job_name": context.params.get('job'),
-            "job_industry": context.params.get('job_industry'),
-            "job_hard_skills": context.params.get('job_hard_skills'),
-            "job_soft_skills": context.params.get('job_soft_skills'),
-            "job_language_skills": context.params.get('job_language_skills')
-        }
-        context.state.put('job_data', data)
-    
-    # Retrieve the incoming event type B
-    incoming_event = context.params.get('ferris.apps.hr.cand_extract')
-    if incoming_event:
+    data = {
+        "job_name": context.params.get('job'),
+        "job_industry": context.params.get('job_industry'),
+        "job_hard_skills": context.params.get('job_hard_skills'),
+        "job_soft_skills": context.params.get('job_soft_skills'),
+        "job_language_skills": context.params.get('job_language_skills')
+    }
+    context.state.put('job_data', data)
+    if incoming_event = None:
+        incoming_event = context.params.get('ferris.apps.hr.cand_extract')
         data = {
             "candidate_name": context.params.get('candidate'),
             "candidate_industry": context.params.get('candidate_industry'),
@@ -48,6 +45,7 @@ def main():
             "candidate_language_skills": context.params.get('candidate_language_skills')
         }
         context.state.put('cand_data', data)
+    print("Event: ", incoming_event)
     
     # Add the incoming event to the 'seen_events' array
     seen_events = state.get('seen_events', [])
