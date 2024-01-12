@@ -61,7 +61,9 @@ def main():
         send_event(job_payload, cand_payload)
         
         # Reset State to Clean
-        context.state.put([])
+        context.state.put('seen_data', [])
+        context.state.put('job_data', [])
+        context.state.put('cand_data', [])
 
         
 main()
