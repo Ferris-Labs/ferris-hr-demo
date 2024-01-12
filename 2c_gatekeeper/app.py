@@ -56,8 +56,9 @@ def main():
 
     # Check if all predefined events are seen
     if all(event in seen_events for event in predefined_events):
-        job_payload = context.state.get('job_data')
-        cand_payload = context.state.get('cand_data')
+        state = context.state.get()
+        job_payload = state['job_data']
+        cand_payload = state['cand_data']
         send_event(job_payload, cand_payload)
         
         # Reset State to Clean
