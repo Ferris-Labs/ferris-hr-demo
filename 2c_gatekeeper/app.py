@@ -35,7 +35,7 @@ def main():
             "job_language_skills": context.params.get('job_language_skills')
         }
         context.state.put('job_data', data)
-    else:
+    if incoming_event == 'ferris.apps.hr.cand_extract':
         data = {
             "candidate_name": context.params.get('candidate'),
             "candidate_industry": context.params.get('candidate_industry'),
