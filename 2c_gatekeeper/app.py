@@ -2,7 +2,6 @@ import json
 from ferris_cli.v2 import FerrisEvents
 from ferris_ef import context
 
-
 def send_event(job_data, cand_data):
     context.events.send(
         "ferris.apps.hr.coverage_ratio",
@@ -56,14 +55,18 @@ def main():
 
     # Check if all predefined events are seen
     if all(event in seen_events for event in predefined_events):
+        state = context.state.get()
         job_payload = state['job_data']
         cand_payload = state['cand_data']
-        send_event(job_payload, cand_payload)
+        if job_payload == [] or cand_payload == []:
+            print("Pass sending event")
+        else:
+            send_event(job_payload, cand_payload)
         
-        # Reset State to Clean
-        context.state.put('seen_data', [])
-        context.state.put('job_data', [])
-        context.state.put('cand_data', [])
+            # Reset State to Clean
+            context.state.put('seen_data', [])
+            context.state.put('job_data', [])
+            context.state.put('cand_data', [])
 
         
 main()
