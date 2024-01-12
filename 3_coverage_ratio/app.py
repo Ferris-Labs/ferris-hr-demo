@@ -40,7 +40,6 @@ def create_skill_matching_prompt(job_data, candidate_data):
 
 # Function to send the prompt to OpenAI and get the response
 def get_skill_matching_response(prompt):
-    openai.api_key = os.getenv("OPENAI_API_KEY")
     response = client.chat.completions.create(model="gpt-3.5-turbo",  # Adjust the model as necessary (e.g. gpt-3.5-turbo)
     messages=[{"role": "You are an experienced Human Resource talent expert and hiring manager", "content": prompt}])
     # Accessing the last message in the completion which contains the response
