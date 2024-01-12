@@ -23,9 +23,10 @@ def main():
 
     # Retrieve the current state
     state = context.state.get()
-
+    print(state)
     # Retrieve the incoming event type A
     incoming_event = context.params.get('origin_event_type')
+    print(incoming_event)
     if incoming_event == 'ferris.apps.hr.job_extract':
         data = {
             "job_name": context.params.get('job'),
@@ -57,6 +58,7 @@ def main():
         # Check if all predefined events are seen
         if all(event in seen_events for event in predefined_events):
             state = context.state.get()
+            print("All Events here: ", state)
             job_payload = state.get('job_data', [])
             cand_payload = state.get('cand_data', [])
 
