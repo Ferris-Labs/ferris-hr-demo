@@ -36,7 +36,6 @@ def main():
             "job_language_skills": context.params.get('job_language_skills')
         }
         context.state.put('job_data', data)
-        incoming_event = None
     
     # Retrieve the incoming event type B
     incoming_event = context.params.get('ferris.apps.hr.cand_extract')
@@ -49,7 +48,6 @@ def main():
             "candidate_language_skills": context.params.get('candidate_language_skills')
         }
         context.state.put('cand_data', data)
-        incoming_event = None
     
     # Add the incoming event to the 'seen_events' array
     seen_events = state.get('seen_events', [])
