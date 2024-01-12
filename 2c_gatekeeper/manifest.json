@@ -1,0 +1,9 @@
+{
+    "description": "Example Event Gatekeeper Pattern",
+    "entrypoint": "app.py",
+    "tags": ["gatekeeper", "HR", "skills", "events"],
+    "trigger_events": ["ferris.apps.hr.job_extract","ferris.apps.hr.cand_extract"],
+    "output_events": ["ferris.apps.hr.coverage_ratio"],
+    "allow_manual_triggering": false,
+    "active": true
+  }

@@ -4,6 +4,7 @@ from openai import OpenAI
 from ferris_ef import context
 
 candidate_name = context.params.get("candidate")
+candidate_industry = context.params.get("candidate_industry")
 candidate_url = context.params.get("candidate_url") or ""
 candidate_file = context.params.get("candidate_file") or ""
 candidate_text = context.params.get("candidate_text") or ""
@@ -21,8 +22,8 @@ def normalize_keys(data):
     return normalized_data
 
 # Function to extract and classify skills
-def extract_and_classify_skills(text):
-    prompt = f"Extract and classify the skills from the following candidate details and CV into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum once in either category. Ensure that results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text:\n\n{text}"
+def extract_and_classify_skills(text, industry):
+    prompt = f"The general industry context is {industry}. Extract and classify the skills from the following candidate details and CV into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum once in either category. Ensure that results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text:\n\n{text}"
     response = client.chat.completions.create(model="gpt-3.5-turbo",  # Adjust the model as necessary (e.g. gpt-3.5-turbo)
     messages=[{"role": "system", "content": prompt}])
     # Accessing the last message in the completion which contains the response
@@ -33,17 +34,18 @@ def extract_and_classify_skills(text):
 cand_profile_text = candidate_url + candidate_file + candidate_text
 
 # Extract and classify skills
-extracted_skills = extract_and_classify_skills(cand_profile_text)
+extracted_skills = extract_and_classify_skills(cand_profile_text, candidate_industry)
 skills_dict = normalize_keys(json.loads(extracted_skills))
 
 print(skills_dict)
 
 if skills_dict.get("hard_skills", []) or skills_dict.get("soft_skills", []) or skills_dict.get("language_skills", []):
     context.events.send(
-        "hr_cand_extract",
+        "ferris.apps.hr.cand_extract",
         context.package.name,
         {
             "candidate": candidate_name,
+            "candidate_industry": candidate_industry,
             "candidate_hard_skills": skills_dict.get("hard_skills", []),
             "candidate_soft_skills": skills_dict.get("soft_skills", []),
             "candidate_language_skills": skills_dict.get("language_skills", [])
@@ -54,7 +56,7 @@ else:
     error_message = "Could not extract any skills from candidate inputs."
     print(error_message)
     context.events.send(
-        "hr_cand_error",
+        "ferris.apps.hr.cand_error",
         context.package.name,
         {
             "candidate": candidate_name,

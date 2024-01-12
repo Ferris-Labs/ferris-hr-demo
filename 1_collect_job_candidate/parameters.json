@@ -10,6 +10,14 @@
     },
     {
       "type": "text",
+      "label": "Job Industry",
+      "name": "jobindustry",
+      "required": true,
+      "default": "Financial Services",
+      "description": "Full name of the industry the job belongs to"
+    },
+    {
+      "type": "text",
       "label": "Job URL",
       "name": "joburl",
       "required": false,
@@ -34,8 +42,16 @@
       "label": "Candidate Name",
       "name": "candname",
       "required": true,
-      "default": "Thommy S. Tulpe",
+      "default": "Tom Debus",
       "description": "Full name of the candidate to be classified"
+    },
+    {
+      "type": "text",
+      "label": "Candidate Industry",
+      "name": "candindustry",
+      "required": true,
+      "default": "Financial Services",
+      "description": "Full name of the industry the candidate belongs to"
     },
     {
       "type": "text",

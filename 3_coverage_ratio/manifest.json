@@ -4,6 +4,6 @@
   "allow_manual_triggering": true,
   "active": true,
   "tags": ["HRTech", "LLM", "Skills"],
-  "trigger_events": ["hr_job_extract", "hr_cand_extract"],
-  "output_events": ["hr_coverage_ratio"]
+  "trigger_events": ["ferris.apps.hr.coverage_ratio"],
+  "output_events": []
 }
