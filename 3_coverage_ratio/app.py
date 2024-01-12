@@ -32,9 +32,9 @@ def create_skill_matching_prompt(job_data, candidate_data):
         f"Soft Skills: {job_data['job_soft_skills']}"
         f"Language Skills: {job_data['job_language_skills']}"
         f"Following are the detailed skills from the candidate:"
-        f"Hard Skills: {candidate_data['job_hard_skills']}"
-        f"Soft Skills: {candidate_data['job_soft_skills']}"
-        f"Language Skills: {candidate_data['job_language_skills']}"
+        f"Hard Skills: {candidate_data['candidate_hard_skills']}"
+        f"Soft Skills: {candidate_data['candidate_soft_skills']}"
+        f"Language Skills: {candidate_data['candidate_language_skills']}"
     )
     return prompt
 
