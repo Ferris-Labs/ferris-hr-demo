@@ -3,7 +3,7 @@ import json
 from openai import OpenAI
 from ferris_ef import context
 
-job_name = context.params.get("job_name")
+job_name = context.params.get("job")
 job_industry = context.params.get("job_industry")
 
 job_url = context.params.get("job_url") or ""
