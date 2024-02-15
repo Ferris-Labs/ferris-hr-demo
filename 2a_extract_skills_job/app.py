@@ -11,7 +11,7 @@ job_file = context.params.get("job_file") or ""
 job_text = context.params.get("job_text") or ""
 
 # Setup LangChain with OpenAI API
-oai_key = context.config.get('OPENAI_API_KEY')
+oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
 client = OpenAI(api_key=oai_key)
 
 

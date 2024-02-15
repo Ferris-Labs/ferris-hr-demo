@@ -10,7 +10,7 @@ candidate_file = context.params.get("candidate_file") or ""
 candidate_text = context.params.get("candidate_text") or ""
 
 # Setup OpenAI API & Client
-oai_key = context.config.get('OPENAI_API_KEY')
+oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
 client = OpenAI(api_key=oai_key)
 
 def normalize_keys(data):

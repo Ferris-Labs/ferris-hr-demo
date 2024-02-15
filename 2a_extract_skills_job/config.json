@@ -1,5 +1,4 @@
 {
-    "OPENAI_API_KEY": "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",
     "MINIO_ENDPOINT": "minio.fx.local:9100",
     "MINIO_ACCESS_KEY": "miniofx",
     "MINIO_SECRET_KEY": "minio123"

@@ -4,7 +4,7 @@ from openai import OpenAI
 from ferris_ef import context
 
 # Setup OpenAI Client
-oai_key = context.config.get('OPENAI_API_KEY')
+oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
 client = OpenAI(api_key=oai_key)
 
 
