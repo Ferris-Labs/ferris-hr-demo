@@ -7,26 +7,11 @@ oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
 client = OpenAI(api_key=oai_key)
 
 def get_skill_matching_response(prompt):
-    try:
-        # Using the openai.ChatCompletion.create method according to the latest API
-        response = client.chat.completions.create(
-            model = "gpt-3.5-turbo",
-            promtp = prompt,
-            max_tokens = 1500,
-            n = 1,
-            stop = None
-        )
-        # Assuming the response structure is correctly returned by the API
-        if response and 'choices' in response and len(response['choices']) > 0:
-            text = response['choices'][0]['text'].strip()
-            if text:
-                return text
-            else:
-                print("No valid text received from OpenAI.")
-                return "{}"
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return "{}"
+    response = client.chat.completions.create(model = "gpt-3.5-turbo",
+    messages=[{"role": "system", "content": prompt}])
+    # Accessing the last message in the completion which contains the response
+    last_message = response.choices[0].message.content
+    return last_message
 
 
 def normalize_keys(data):
