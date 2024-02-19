@@ -24,9 +24,9 @@ def get_skill_matching_response(prompt):
         else:
             print("No valid response received from OpenAI.")
             return "{}"  # Return an empty JSON string to prevent decode errors
-        except Exception as e:
-                print(f"An error occurred: {str(e)}")
-return "{}"  # Return an empty JSON string to safely handle the error
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return "{}"  # Return an empty JSON string to safely handle the error
 
 
 def normalize_keys(data):
