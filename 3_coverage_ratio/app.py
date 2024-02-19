@@ -41,11 +41,19 @@ def create_skill_matching_prompt(job_data, candidate_data):
 
 # Function to send the prompt to OpenAI and get the response
 def get_skill_matching_response(prompt):
-    response = client.chat.completions.create(model="gpt-3.5-turbo",  # Adjust the model as necessary (e.g. gpt-3.5-turbo)
-    messages=[{"role": "system", "content": prompt}])
-    # Accessing the last message in the completion which contains the response
-    last_message = response.choices[0].message.content
-    return last_message
+    response = client.chat.create(
+        model="gpt-3.5-turbo",  # Adjust the model as necessary
+        messages=[{"role": "system", "content": prompt}]
+    )
+    # Assuming the structure of the response and adjusting the access accordingly
+    # This part needs to be aligned with the actual response structure
+    if response.choices and response.choices[0].text.strip() != "":
+        # Accessing the text directly, assuming it's the correct field
+        return response.choices[0].text
+    else:
+        # Handle cases where the response might not be as expected
+        print("No valid response received from OpenAI.")
+        return "{}"  # Return an empty JSON string to prevent decode errors
 
 
 job_data = context.params.get("job_data")
