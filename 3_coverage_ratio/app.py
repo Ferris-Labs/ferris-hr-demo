@@ -11,22 +11,21 @@ openai.api_key = oai_key  # Correct way to set the API key
 # Function to send the prompt to OpenAI and get the response
 def get_skill_matching_response(prompt):
     try:
-        response = openai.Completion.create(
-            engine="gpt-3.5-turbo",
-            prompt=prompt,
-            max_tokens=1500,  # Adjust based on your needs
-            n=1,
-            stop=None  # You can set stop sequences if needed
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{
+                "role": "user",
+                "content": prompt
+            }]
         )
-        # Access the text of the first completion
-        if response.choices and len(response.choices) > 0 and response.choices[0].text.strip() != "":
-            return response.choices[0].text
+        if response['choices'] and len(response['choices']) > 0 and 'message' in response['choices'][0]:
+            return response['choices'][0]['message']['content']
         else:
             print("No valid response received from OpenAI.")
-            return "{}"  # Return an empty JSON string to prevent decode errors
+            return "{}" # Return an empty JSON string to prevent decode errors
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        return "{}"  # Return an empty JSON string to safely handle the error
+        return "{}" # Return an empty JSON string to safely handle the error
 
 
 def normalize_keys(data):
