@@ -13,8 +13,11 @@ def get_skill_matching_response(prompt):
         response = client.chat.completions.create(model="gpt-3.5-turbo",  # Adjust the model as necessary (e.g. gpt-3.5-turbo)
         messages=[{"role": "system", "content": prompt}])
         # Accessing the last message in the completion which contains the response
-        last_message = response.choices[0].message.content
-        return last_message
+        if 'choices' in response and response['choices'] and 'message' in response['choices'][0]:
+            return response['choices'][0]['message']['content']
+        else:
+            print("No valid response received from OpenAI.")
+            return "{}"
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return "{}"
