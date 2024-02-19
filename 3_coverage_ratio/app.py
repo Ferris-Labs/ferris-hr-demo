@@ -11,22 +11,11 @@ openai.api_key = oai_key  # Correct way to set the API key
 # Function to send the prompt to OpenAI and get the response
 def get_skill_matching_response(prompt):
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[{
-                "role": "user",
-                "content": prompt
-            }]
-        )
-        # If the response directly provides the completion data in a property
-        if hasattr(response, 'choices') and len(response.choices) > 0:
-            # Extracting text from the first choice
-            choice = response.choices[0]
-            if hasattr(choice, 'message') and 'content' in choice.message:
-                return choice.message['content']
-            else:
-                print("No valid response message content received from OpenAI.")
-                return "{}"
+        response = client.chat.completions.create(model="gpt-3.5-turbo",  # Adjust the model as necessary (e.g. gpt-3.5-turbo)
+        messages=[{"role": "system", "content": prompt}])
+        # Accessing the last message in the completion which contains the response
+        last_message = response.choices[0].message.content
+        return last_message
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         return "{}"
