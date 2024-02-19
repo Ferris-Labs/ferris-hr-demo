@@ -1,11 +1,32 @@
 import os
 import json
-from openai import OpenAI
+import openai
 from ferris_ef import context
 
 # Setup OpenAI Client
 oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
-client = OpenAI(api_key=oai_key)
+openai.api_key = oai_key  # Correct way to set the API key
+
+
+# Function to send the prompt to OpenAI and get the response
+def get_skill_matching_response(prompt):
+    try:
+        response = openai.Completion.create(
+            engine="gpt-3.5-turbo",
+            prompt=prompt,
+            max_tokens=1500,  # Adjust based on your needs
+            n=1,
+            stop=None  # You can set stop sequences if needed
+        )
+        # Access the text of the first completion
+        if response.choices and len(response.choices) > 0 and response.choices[0].text.strip() != "":
+            return response.choices[0].text
+        else:
+            print("No valid response received from OpenAI.")
+            return "{}"  # Return an empty JSON string to prevent decode errors
+        except Exception as e:
+                print(f"An error occurred: {str(e)}")
+return "{}"  # Return an empty JSON string to safely handle the error
 
 
 def normalize_keys(data):
@@ -38,26 +59,6 @@ def create_skill_matching_prompt(job_data, candidate_data):
         f"Language Skills: {candidate_data['candidate_language_skills']}"
     )
     return prompt
-
-# Function to send the prompt to OpenAI and get the response
-def get_skill_matching_response(prompt):
-    try:
-        response = client.Completion.create(
-            model="gpt-3.5-turbo",  # Adjust based on the model you're using
-            prompt=prompt,
-            max_tokens=1500,  # Adjust based on your needs
-            n=1,
-            stop=None  # You can set stop sequences if needed
-        )
-        # Access the text of the first (and in this case, only) completion
-        if response.choices and response.choices[0].text.strip() != "":
-            return response.choices[0].text
-        else:
-            print("No valid response received from OpenAI.")
-            return "{}"  # Return an empty JSON string to prevent decode errors
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return "{}"  # Return an empty JSON string to safely handle the error
 
 
 job_data = context.params.get("job_data")
