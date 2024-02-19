@@ -55,7 +55,7 @@ prompt = create_skill_matching_prompt(job_data, candidate_data)
 # Get the response from OpenAI
 skill_matching_response = get_skill_matching_response(prompt)
 
-response_dict = normalize_keys(json.loads(skill_matching_response))
+response_dict = json.loads(skill_matching_response)
 
 # Output handling
 print(json.dumps(response_dict, indent=4))  # For demonstration purposes
