@@ -3,10 +3,9 @@ import json
 import openai
 from ferris_ef import context
 
-# Setup OpenAI Client
+# Setup OpenAI API & Client
 oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
-openai.api_key = oai_key  # Correct way to set the API key
-
+client = OpenAI(api_key=oai_key)
 
 # Function to send the prompt to OpenAI and get the response
 def get_skill_matching_response(prompt):
