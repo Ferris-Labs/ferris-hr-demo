@@ -55,17 +55,17 @@ def main():
     # Check if all predefined events are seen
     if all(event in seen_events for event in predefined_events):
         print("All Events here: ", seen_events)
+        state = context.state.get()
         job_payload = state.get('job_data')
         cand_payload = state.get('cand_data')
 
-        if job_payload and cand_payload:
-            send_event(job_payload, cand_payload)
-            # Reset State to Clean
-            context.state.put('seen_events', [])
-            context.state.put('job_data', [])
-            context.state.put('cand_data', [])
-        else:
-            print("Waiting for both job and candidate data to be available.")
+        send_event(job_payload, cand_payload)
+        # Reset State to Clean
+        context.state.put('seen_events', [])
+        context.state.put('job_data', [])
+        context.state.put('cand_data', [])
+    else:
+        print("Waiting for both job and candidate data to be available.")
 
 main()
 
