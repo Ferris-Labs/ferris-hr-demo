@@ -1,6 +1,6 @@
 import os
 import json
-import openai
+from openai import OpenAI
 from ferris_ef import context
 
 # Setup OpenAI API & Client
