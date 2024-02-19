@@ -50,7 +50,9 @@ def main():
     seen_events = state.get('seen_events', [])
     if incoming_event not in seen_events:
         seen_events.append(incoming_event)
-        context.state.put('seen_events', seen_events)
+
+    # Update the state with the new list of seen events
+    context.state.put('seen_events', seen_events)
 
     # Check if all predefined events are seen
     if all(event in seen_events for event in predefined_events):
