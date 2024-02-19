@@ -51,12 +51,9 @@ def main():
     if incoming_event not in seen_events:
         seen_events.append(incoming_event)
 
-    # Update the state with the new list of seen events
-    context.state.put('seen_events', seen_events)
-
     # Check if all predefined events are seen
     if all(event in seen_events for event in predefined_events):
-        print("All Events here: ", state)
+        print("All Events here: ", seen_events)
         job_payload = state.get('job_data')
         cand_payload = state.get('cand_data')
 
@@ -68,6 +65,9 @@ def main():
             context.state.put('cand_data', [])
         else:
             print("Waiting for both job and candidate data to be available.")
+    else:
+        # Update the state with the new list of seen events
+        context.state.put('seen_events', seen_events)
 
 main()
 

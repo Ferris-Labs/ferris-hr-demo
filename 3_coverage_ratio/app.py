@@ -11,7 +11,7 @@ openai.api_key = oai_key  # Correct way to set the API key
 # Function to send the prompt to OpenAI and get the response
 def get_skill_matching_response(prompt):
     try:
-        response = openai.ChatCompletion.create(
+        response = openai.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{
                 "role": "user",
