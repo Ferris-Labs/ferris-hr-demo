@@ -1,27 +1,28 @@
 import json
-import openai
+from openai import OpenAI
 from ferris_ef import context
 
 # Setup OpenAI API & Client
 oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
-openai.api_key = oai_key  # Set the API key on the openai module
+client = OpenAI(api_key=oai_key)
 
 def get_skill_matching_response(prompt):
     try:
         # Using the openai.ChatCompletion.create method according to the latest API
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "system", "content": prompt}]
+        response = client.openai.Completion.create(
+            model = "gpt-3.5-turbo",
+            promtp = prompt,
+            max_tokens = 1500,
+            n = 1,
+            stop = None
         )
         # Assuming the response structure is correctly returned by the API
         if response and 'choices' in response and len(response['choices']) > 0:
-            # Assuming each choice contains a 'message' with 'content'
-            # This part may need adjustment based on actual response format
-            content = response['choices'][0].get('message', {}).get('content', '')
-            if content:
-                return content
+            text = response['choices'][0]['text'].strip()
+            if text:
+                return text
             else:
-                print("No valid message content received from OpenAI.")
+                print("No valid text received from OpenAI.")
                 return "{}"
     except Exception as e:
         print(f"An error occurred: {str(e)}")
