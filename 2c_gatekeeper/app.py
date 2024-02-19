@@ -50,28 +50,22 @@ def main():
     seen_events = state.get('seen_events', [])
     if incoming_event not in seen_events:
         seen_events.append(incoming_event)
+        context.state.put('seen_events', seen_events)
 
-    # Update the state with the new list of seen events
-    context.state.put('seen_events', seen_events)
+    # Check if all predefined events are seen
+    if all(event in seen_events for event in predefined_events):
+        print("All Events here: ", state)
+        job_payload = state.get('job_data')
+        cand_payload = state.get('cand_data')
 
-    try:
-        # Check if all predefined events are seen
-        if all(event in seen_events for event in predefined_events):
-            print("All Events here: ", state)
-            job_payload = state.get('job_data')
-            cand_payload = state.get('cand_data')
+        if job_payload and cand_payload:
+            send_event(job_payload, cand_payload)
+            # Reset State to Clean
+            context.state.put('seen_events', [])
+            context.state.put('job_data', [])
+            context.state.put('cand_data', [])
+        else:
+            print("Waiting for both job and candidate data to be available.")
 
-            if job_payload and cand_payload:
-                send_event(job_payload, cand_payload)
-                # Reset State to Clean
-                context.state.put('seen_events', [])
-                context.state.put('job_data', [])
-                context.state.put('cand_data', [])
-            else:
-                print("Waiting for both job and candidate data to be available.")
-    except KeyError as e:
-        print(f"Key error occurred: {e}")
-        # Handle the key error or take additional actions as needed
-        
 main()
 
