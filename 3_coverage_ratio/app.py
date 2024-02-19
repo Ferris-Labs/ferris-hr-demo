@@ -9,7 +9,7 @@ client = OpenAI(api_key=oai_key)
 def get_skill_matching_response(prompt):
     try:
         # Using the openai.ChatCompletion.create method according to the latest API
-        response = client.openai.Completion.create(
+        response = client.chat.completions.create(
             model = "gpt-3.5-turbo",
             promtp = prompt,
             max_tokens = 1500,
