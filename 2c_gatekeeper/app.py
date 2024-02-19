@@ -65,7 +65,7 @@ def main():
             if job_payload and cand_payload:
                 send_event(job_payload, cand_payload)
                 # Reset State to Clean
-                context.state.put('seen_data', [])
+                context.state.put('seen_events', [])
                 context.state.put('job_data', [])
                 context.state.put('cand_data', [])
             else:
