@@ -57,7 +57,6 @@ def main():
     try:
         # Check if all predefined events are seen
         if all(event in seen_events for event in predefined_events):
-            state = context.state.get()
             print("All Events here: ", state)
             job_payload = state.get('job_data')
             cand_payload = state.get('cand_data')
