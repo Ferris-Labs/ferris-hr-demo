@@ -41,8 +41,17 @@ candidate_file = context.params.get("candfile")
 candidate_text = context.params.get("candtext")
 
 # Process local PDFs
-job_profile_pdf_text = extract_text_from_pdf(job_file) if job_file else None
-candidate_cv_pdf_text = extract_text_from_pdf(candidate_file) if candidate_file else None
+if job_file:
+    script_dir = os.path.dirname(__file__)
+    rel_path = job_file
+    job_file_path = os.path.join(script_dir, rel_path)
+    job_profile_pdf_text = extract_text_from_pdf(job_file_path) if job_file_path else None
+
+if candidate_file:
+    script_dir = os.path.dirname(__file__)
+    rel_path = candidate_file
+    cand_file_path = os.path.join(script_dir, rel_path)
+    candidate_cv_pdf_text = extract_text_from_pdf(cand_file_path) if cand_file_path else None
 
 # Process PDFs from URLs
 job_profile_url_text = extract_text_from_pdf_url(job_url) if job_url else None
