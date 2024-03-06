@@ -2,7 +2,7 @@
   "fields": [
     {
       "type": "text",
-      "label": "Job Name",
+      "label": "Virtus Job Name",
       "name": "jobname",
       "required": true,
       "default": "Head of Digital Transformation",
