@@ -47,7 +47,7 @@ if job_file:
     job_file_path = os.path.join(script_dir, rel_path)
     job_profile_pdf_text = extract_text_from_pdf(job_file_path) if job_file_path else None
 else:
-    none
+    None
 
 if candidate_file:
     script_dir = os.path.dirname(__file__)
@@ -55,7 +55,7 @@ if candidate_file:
     cand_file_path = os.path.join(script_dir, rel_path)
     candidate_cv_pdf_text = extract_text_from_pdf(cand_file_path) if cand_file_path else None
 else:
-    none
+    None
 
 # Process PDFs from URLs
 job_profile_url_text = extract_text_from_pdf_url(job_url) if job_url else None
