@@ -3,6 +3,7 @@ from PyPDF2 import PdfReader
 import requests
 from io import BytesIO
 from ferris_ef import context
+from ferris_cli.v2 import FerrisEvents
 
 # Function to extract text from PDF
 def extract_text_from_pdf(pdf_path):
@@ -13,6 +14,7 @@ def extract_text_from_pdf(pdf_path):
             text += page.extract_text() + "\n"
         return text
     else:
+        print(pdf_path)
         return None
 
 # Function to download and extract text from PDF URL
@@ -26,6 +28,7 @@ def extract_text_from_pdf_url(url):
             text += page.extract_text() + "\n"
         return text
     except requests.RequestException:
+        print(url)
         return None
     
 job = context.params.get("jobname")
@@ -42,21 +45,23 @@ candidate_text = context.params.get("candtext")
 
 # Process local PDFs
 if job_file:
-    script_dir = os.path.dirname(__file__)
+    script_dir = os.getcwd()
     rel_path = job_file
     job_file_path = os.path.join(script_dir, rel_path)
     job_profile_pdf_text = extract_text_from_pdf(job_file_path)
     print(job_profile_pdf_text)
 else:
+    print(job_file)
     job_profile_pdf_text = None
 
 if candidate_file:
-    script_dir = os.path.dirname(__file__)
+    script_dir = os.getcwd()
     rel_path = candidate_file
     cand_file_path = os.path.join(script_dir, rel_path)
     candidate_cv_pdf_text = extract_text_from_pdf(cand_file_path)
     print(candidate_cv_pdf_text)
 else:
+    print(candidate_file)
     candidate_cv_pdf_text = None
 
 # Process PDFs from URLs
