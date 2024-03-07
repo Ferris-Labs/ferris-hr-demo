@@ -11,7 +11,7 @@ def get_skill_matching_response(prompt):
     messages=[{"role": "system", "content": prompt}])
     # Accessing the last message in the completion which contains the response
     last_message = response.choices[0].message.content
-    print(response.choices[0].message.content)
+    # print(response.choices[0].message.content)
     return last_message
 
 
@@ -56,7 +56,7 @@ prompt = create_skill_matching_prompt(job_data, candidate_data)
 # Get the response from OpenAI
 skill_matching_response = get_skill_matching_response(prompt)
 
-response_dict = json.loads(skill_matching_response)
+response_dict = json.loads(repr(skill_matching_response))
 
 # Output handling
 print(json.dumps(response_dict, indent=4))  # For demonstration purposes
