@@ -11,6 +11,7 @@ def get_skill_matching_response(prompt):
     messages=[{"role": "system", "content": prompt}])
     # Accessing the last message in the completion which contains the response
     last_message = response.choices[0].message.content
+    print(response.choices[0].message.content)
     return last_message
 
 
