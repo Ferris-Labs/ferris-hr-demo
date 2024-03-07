@@ -45,7 +45,7 @@ if job_file:
     script_dir = os.path.dirname(__file__)
     rel_path = job_file
     job_file_path = os.path.join(script_dir, rel_path)
-    job_profile_pdf_text = extract_text_from_pdf(job_file_path) if job_file_path
+    job_profile_pdf_text = extract_text_from_pdf(job_file_path)
     print(job_profile_pdf_text)
 else:
     job_profile_pdf_text = None
@@ -54,7 +54,7 @@ if candidate_file:
     script_dir = os.path.dirname(__file__)
     rel_path = candidate_file
     cand_file_path = os.path.join(script_dir, rel_path)
-    candidate_cv_pdf_text = extract_text_from_pdf(cand_file_path) if cand_file_path
+    candidate_cv_pdf_text = extract_text_from_pdf(cand_file_path)
     print(candidate_cv_pdf_text)
 else:
     candidate_cv_pdf_text = None
