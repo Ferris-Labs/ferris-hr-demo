@@ -2,7 +2,7 @@
   "fields": [
     {
       "type": "text",
-      "label": "Glatt Job Name",
+      "label": "Job Name",
       "name": "jobname",
       "required": true,
       "default": "Head of Digital Transformation",
