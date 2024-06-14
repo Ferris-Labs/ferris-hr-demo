@@ -38,7 +38,7 @@ def extract_and_classify_skills(text, industry):
         f"{text}"
     )
     try:
-        response = client.chat.completion.create(
+        response = client.chat.completions.create(
             model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}]
         )

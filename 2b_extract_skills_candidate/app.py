@@ -11,7 +11,7 @@ candidate_text = context.params.get("candidate_text") or ""
 
 # Setup OpenAI API & Client
 oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
-openai.api_key = oai_key
+client = OpenAI(api_key=oai_key)
 
 def normalize_keys(data):
     """Normalize keys in a dictionary to lowercase with underscores."""
@@ -38,7 +38,7 @@ def extract_and_classify_skills(text, industry):
         f"Candidate description:\n{text}"
     )
     try:
-        response = client.chat.completion.create(
+        response = client.chat.completions.create(
             model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
