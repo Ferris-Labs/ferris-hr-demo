@@ -11,7 +11,7 @@ job_url = context.params.get("job_url") or ""
 job_file = context.params.get("job_file") or ""
 job_text = context.params.get("job_text") or ""
 
-# Setup LangChain with OpenAI API
+# Setup OpenAI API
 oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
 client = AsyncOpenAI(api_key=oai_key)
 
@@ -42,59 +42,63 @@ async def extract_and_classify_skills(text, industry):
         response = await client.chat.completions.create(
             model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
         )
-        # Accessing the last message in the completion which contains the response
-        last_message = response['choices'][0]['message']['content']
+        # Accessing the message content from the response
+        last_message = response.choices[0].message['content']
         return last_message
     except Exception as e:
         print(f"Error during API call: {e}")
         return ""
 
-# Concat job profile text from the environment params
-job_profile_text = job_text or job_file or job_url
+# Main async function to execute the workflow
+async def main():
+    # Concat job profile text from the environment params
+    job_profile_text = job_text or job_file or job_url
 
-# Extract and classify skills
-extracted_skills = asyncio.run(extract_and_classify_skills(job_profile_text, job_industry))
+    # Extract and classify skills
+    extracted_skills = await extract_and_classify_skills(job_profile_text, job_industry)
 
-# Logging the extracted skills for debugging purposes
-print("Extracted Skills Raw Output:")
-print(extracted_skills)
+    # Logging the extracted skills for debugging purposes
+    print("Extracted Skills Raw Output:")
+    print(extracted_skills)
 
-if extracted_skills:
-    try:
-        skills_dict = normalize_keys(json.loads(extracted_skills))
-    except json.JSONDecodeError as e:
-        print(f"JSON decode error: {e}")
-        skills_dict = {}
+    if extracted_skills:
+        try:
+            skills_dict = normalize_keys(json.loads(extracted_skills))
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error: {e}")
+            skills_dict = {}
 
-    print(skills_dict)
+        print(skills_dict)
 
-    if skills_dict.get("hard_skills", []) or skills_dict.get("soft_skills", []) or skills_dict.get("language_skills", []):
-        context.events.send(
-            "ferris.apps.hr.job_extract",
-            context.package.name,
-            {
-                "job": job_name,
-                "job_industry": job_industry,
-                "job_hard_skills": skills_dict.get("hard_skills", []),
-                "job_soft_skills": skills_dict.get("soft_skills", []),
-                "job_language_skills": skills_dict.get("language_skills", [])
-            }
-        )
-        print("Job profiling step completed, Trigger Event: hr_coverage_ratio")
+        if skills_dict.get("hard_skills", []) or skills_dict.get("soft_skills", []) or skills_dict.get("language_skills", []):
+            context.events.send(
+                "ferris.apps.hr.job_extract",
+                context.package.name,
+                {
+                    "job": job_name,
+                    "job_industry": job_industry,
+                    "job_hard_skills": skills_dict.get("hard_skills", []),
+                    "job_soft_skills": skills_dict.get("soft_skills", []),
+                    "job_language_skills": skills_dict.get("language_skills", [])
+                }
+            )
+            print("Job profiling step completed, Trigger Event: hr_coverage_ratio")
+        else:
+            error_message = "Could not extract any skills from Job inputs."
+            print(error_message)
+            context.events.send(
+                "ferris.apps.hr.job_error",
+                context.package.name,
+                {
+                    "job": job_name,
+                    "job_parsed_text": job_profile_text,
+                }
+            )
+            print("Step Completed - Error")
     else:
-        error_message = "Could not extract any skills from Job inputs."
-        print(error_message)
-        context.events.send(
-            "ferris.apps.hr.job_error",
-            context.package.name,
-            {
-                "job": job_name,
-                "job_parsed_text": job_profile_text,
-            }
-        )
+        print("No skills were extracted.")
 
-        print("Could not extract skills from Job input")
-else:
-    print("No skills were extracted.")
+# Run the main function
+if __name__ == "__main__":
+    asyncio.run(main())
