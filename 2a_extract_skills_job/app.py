@@ -38,19 +38,19 @@ def extract_and_classify_skills(text, industry):
         f"{text}"
     )
     try:
-        response = client.chat.completions.create(
+        response = client.chat_completions.create(
             model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
         # Accessing the last message in the completion which contains the response
-        last_message = response.choices[0].message["content"]
+        last_message = response['choices'][0]['message']['content']
         return last_message
     except Exception as e:
         print(f"Error during API call: {e}")
         return ""
 
 # Concat job profile text from the environment params
-job_profile_text = job_url + job_file + job_text
+job_profile_text = job_text or job_file or job_url
 
 # Extract and classify skills
 extracted_skills = extract_and_classify_skills(job_profile_text, job_industry)
