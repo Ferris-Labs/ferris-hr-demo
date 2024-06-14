@@ -110,14 +110,14 @@ context.events.send(
     {
         "job": job,
         "job_industry": job_industry,
-        "job_url": job_profile_url_text,
+        "job_url": job_url,
         "job_file": job_profile_pdf_text,
-        "job_text": job_text,
+        "job_text": job_profile_url_text,
         "candidate": candidate,
         "candidate_industry": candidate_industry,
-        "candidate_url": candidate_cv_url_text,
+        "candidate_url": candidate_url,
         "candidate_file": candidate_cv_pdf_text,
-        "candidate_text": candidate_text,
+        "candidate_text": candidate_cv_url_text,
     }
 )
 
