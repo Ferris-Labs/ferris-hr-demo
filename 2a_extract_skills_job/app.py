@@ -29,12 +29,12 @@ async def extract_and_classify_skills(text, industry):
         f"The general industry context is {industry}. Extract and classify the skills from the following job description "
         "into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at most "
         "once in either category. Exclude company names that are not skills. Ensure that results are provided as a raw JSON "
-        "key-value dictionary with no further complementary or cautionary text. Structure the JSON as follows and do not change the key names:\n"
+        "key-value dictionary with no further complementary or cautionary text. Structure the JSON as follows and do not"
+        "change the key names and only return the raw JSON without any leading qualifiers before the brackets:\n"
         "{\n"
-        '  "hard_skills": ["specific technical skills or knowledge related to the job"],\n'
-        '  "soft_skills": ["interpersonal and personal attributes"],\n'
-        '  "language_skills": ["languages required or beneficial"]\n'
-        "}\n\n"
+        '  "hard_skills": ["hard_skill1", "hard_skill2", ...],\n'
+        '  "soft_skills": ["soft_skill1", "soft_skill2", ...],\n'
+        '  "language_skills": ["language_skill1", "language_skill2", ...],\n'        "}\n\n"
         "Job description:\n"
         f"{text}"
     )
@@ -64,7 +64,8 @@ async def main():
 
     if extracted_skills:
         try:
-            skills_dict = normalize_keys(json.loads(extracted_skills))
+            extracted_skills = extracted_skills.strip()
+            skills_dict = json.loads(extracted_skills)
         except json.JSONDecodeError as e:
             print(f"JSON decode error: {e}")
             skills_dict = {}

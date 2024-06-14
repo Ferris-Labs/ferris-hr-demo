@@ -64,7 +64,8 @@ async def main():
 
     if extracted_skills:
         try:
-            skills_dict = normalize_keys(json.loads(extracted_skills))
+            extracted_skills = extracted_skills.strip()
+            skills_dict = json.loads(extracted_skills)
         except json.JSONDecodeError as e:
             print(f"JSON decode error: {e}")
             skills_dict = {}
