@@ -44,7 +44,7 @@ async def extract_and_classify_skills(text, industry):
             messages=[{"role": "user", "content": prompt}],
         )
         # Accessing the message content from the response
-        last_message = response.choices[0].message['content']
+        last_message = response.choices[0].message.content
         return last_message
     except Exception as e:
         print(f"Error during API call: {e}")
