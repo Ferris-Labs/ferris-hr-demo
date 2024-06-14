@@ -43,7 +43,7 @@ def extract_and_classify_skills(text, industry):
             messages=[{"role": "user", "content": prompt}]
         )
         # Accessing the last message in the completion which contains the response
-        last_message = response['choices'][0]['message']['content']
+        last_message = response.choices[0].message['content']
         return last_message
     except Exception as e:
         print(f"Error during API call: {e}")
