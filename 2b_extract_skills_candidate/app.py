@@ -24,17 +24,18 @@ def normalize_keys(data):
 # Function to extract and classify skills
 def extract_and_classify_skills(text, industry):
     prompt = (
-        f"The general industry context is {industry}. Extract and classify the skills from the following job description "
-        "into three categories: hard skills, soft skills, and language skills. Eliminate all redundancies so each skill "
-        "only shows up at most once in either category. Exclude company names and any terms that are not skills. Ensure that "
+        f"The general industry context is {industry}. Extract and classify the skills from the following candidate profile "
+        "into four categories: hard skills, soft skills, language skills and experience. Eliminate all redundancies so each skill "
+        "only shows up at most once in either category. Exclude any terms that are not skills from the skills entries. Ensure that "
         "results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text. "
         "Structure the JSON as follows:\n"
         "{\n"
-        '  "hard_skills": ["skill1", "skill2", ...],\n'
-        '  "soft_skills": ["skill1", "skill2", ...],\n'
-        '  "language_skills": ["skill1", "skill2", ...]\n'
+        '  "hard_skills": ["hard_skill1", "hard_skill2", ...],\n'
+        '  "soft_skills": ["soft_skill1", "soft_skill2", ...],\n'
+        '  "language_skills": ["language_skill1", "language_skill2", ...]\n'
+        '  "experience": ["company_a": ["from_time_1", "to_time_2"], "company_b": ["from_time_3", "to_time_4"], ...],\n'
         "}\n\n"
-        f"Job description:\n{text}"
+        f"Candidate description:\n{text}"
     )
     response = client.chat.completions.create(
         model="gpt-4-turbo",
