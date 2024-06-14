@@ -1,6 +1,7 @@
 import os
 import json
-from openai import OpenAI
+import asyncio
+from openai import AsyncOpenAI
 from ferris_ef import context
 
 job_name = context.params.get("job")
@@ -12,7 +13,7 @@ job_text = context.params.get("job_text") or ""
 
 # Setup LangChain with OpenAI API
 oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
-client = OpenAI(api_key=oai_key)
+client = AsyncOpenAI(api_key=oai_key)
 
 def normalize_keys(data):
     """Normalize keys in a dictionary to lowercase with underscores."""
@@ -23,7 +24,7 @@ def normalize_keys(data):
     return normalized_data
 
 # Function to extract and classify skills
-def extract_and_classify_skills(text, industry):
+async def extract_and_classify_skills(text, industry):
     prompt = (
         f"The general industry context is {industry}. Extract and classify the skills from the following job description "
         "into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at most "
@@ -38,12 +39,13 @@ def extract_and_classify_skills(text, industry):
         f"{text}"
     )
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model="gpt-4-turbo",
-            messages=[{"role": "user", "content": prompt}]
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"},
         )
         # Accessing the last message in the completion which contains the response
-        last_message = response.choices[0].message['content']
+        last_message = response['choices'][0]['message']['content']
         return last_message
     except Exception as e:
         print(f"Error during API call: {e}")
@@ -53,7 +55,7 @@ def extract_and_classify_skills(text, industry):
 job_profile_text = job_text or job_file or job_url
 
 # Extract and classify skills
-extracted_skills = extract_and_classify_skills(job_profile_text, job_industry)
+extracted_skills = asyncio.run(extract_and_classify_skills(job_profile_text, job_industry))
 
 # Logging the extracted skills for debugging purposes
 print("Extracted Skills Raw Output:")
