@@ -26,16 +26,26 @@ def normalize_keys(data):
 # Function to extract and classify skills
 def extract_and_classify_skills(text, industry):
     prompt = (
-        f"The general industry context is {industry}. Extract and classify the skills from the following job description"
-        "into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at maximum"
-        "once in either category. Eliminate company names that are not skills. Ensure that results are provided as a raw JSON"
-        f"key-value dictionary with no further complementary or cautionary text:\n\n{text}"
+        f"The general industry context is {industry}. Extract and classify the skills from the following job description "
+        "into three categories: hard skills, soft skills, and language skills. Eliminate all redundancies so each skill "
+        "only shows up at most once in either category. Exclude company names and any terms that are not skills. Ensure that "
+        "results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text. "
+        "Structure the JSON as follows:\n"
+        "{\n"
+        '  "hard_skills": ["skill1", "skill2", ...],\n'
+        '  "soft_skills": ["skill1", "skill2", ...],\n'
+        '  "language_skills": ["skill1", "skill2", ...]\n'
+        "}\n\n"
+        f"Job description:\n{text}"
     )
-    response = client.chat.completions.create(model="gpt-3.5-turbo",  # Adjust the model as necessary (e.g. gpt-3.5-turbo)
-    messages=[{"role": "system", "content": prompt}])
+    response = client.chat.completions.create(
+        model="gpt-4-turbo",
+        messages=[{"role": "system", "content": prompt}]
+    )
     # Accessing the last message in the completion which contains the response
     last_message = response.choices[0].message.content
     return last_message
+
 
 # Concat job profile text from the environment params
 job_profile_text = job_url + job_file + job_text
