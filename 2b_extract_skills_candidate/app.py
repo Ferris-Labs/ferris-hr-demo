@@ -81,7 +81,7 @@ async def main():
                     "candidate_hard_skills": skills_dict.get("hard_skills", []),
                     "candidate_soft_skills": skills_dict.get("soft_skills", []),
                     "candidate_language_skills": skills_dict.get("language_skills", []),
-                    "experience": skills_dict.get("experience", {})
+                    "candidate_experience": skills_dict.get("experience", {})
                 }
             )
             print("Candidate profiling step completed, Trigger Event: hr_coverage_ratio")

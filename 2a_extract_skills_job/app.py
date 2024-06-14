@@ -29,7 +29,7 @@ async def extract_and_classify_skills(text, industry):
         f"The general industry context is {industry}. Extract and classify the skills from the following job description "
         "into hard skills, soft skills, and language skills. Eliminate all redundancies so each skill only shows up at most "
         "once in either category. Exclude company names that are not skills. Ensure that results are provided as a raw JSON "
-        "key-value dictionary with no further complementary or cautionary text. Structure the JSON as follows:\n"
+        "key-value dictionary with no further complementary or cautionary text. Structure the JSON as follows and do not change the key names:\n"
         "{\n"
         '  "hard_skills": ["specific technical skills or knowledge related to the job"],\n'
         '  "soft_skills": ["interpersonal and personal attributes"],\n'
