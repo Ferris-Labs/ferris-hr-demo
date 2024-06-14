@@ -34,8 +34,7 @@ async def extract_and_classify_skills(text, industry):
         '  "hard_skills": ["hard_skill1", "hard_skill2", ...],\n'
         '  "soft_skills": ["soft_skill1", "soft_skill2", ...],\n'
         '  "language_skills": ["language_skill1", "language_skill2", ...],\n'
-        '  "experience": {"company_a": ["from_time_1", "to_time_2"], "company_b": ["from_time_3", "to_time_4"], ...}\n'
-        "}\n\n"
+        '  "experience": [{"company": "company_a", "from": "from_time_1", "to": "to_time_2"}, {"company": "company_b", "from": "from_time_3", "to": "to_time_4"}, ...]\n'        "}\n\n"
         f"Candidate description:\n{text}"
     )
     try:
@@ -82,7 +81,7 @@ async def main():
                     "candidate_hard_skills": skills_dict.get("hard_skills", []),
                     "candidate_soft_skills": skills_dict.get("soft_skills", []),
                     "candidate_language_skills": skills_dict.get("language_skills", []),
-                    "candidate_experience": skills_dict.get("experience", {})
+                    "candidate_experience": skills_dict.get("experience", [])
                 }
             )
             print("Candidate profiling step completed, Trigger Event: hr_coverage_ratio")
