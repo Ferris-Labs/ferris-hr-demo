@@ -39,7 +39,7 @@ def extract_and_classify_skills(text, industry):
     )
     response = client.chat.completions.create(
         model="gpt-4-turbo",
-        messages=[{"role": "system", "content": prompt}]
+        messages=[{"role": "user", "content": prompt}]
     )
     # Accessing the last message in the completion which contains the response
     last_message = response.choices[0].message.content
