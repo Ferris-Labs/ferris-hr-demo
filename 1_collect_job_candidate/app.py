@@ -61,65 +61,84 @@ def extract_text_from_url(url):
     html_text = extract_text_from_html_url(url)
     return html_text
 
-
-job = context.params.get("jobname")
+# Context parameters
+job_name = context.params.get("jobname")
 job_industry = context.params.get("jobindustry")
 job_url = context.params.get("joburl")
 job_file = context.params.get("jobfile")
 job_text = context.params.get("jobtext")
 
-candidate = context.params.get("candname")
+candidate_name = context.params.get("candname")
 candidate_industry = context.params.get("candindustry")
 candidate_url = context.params.get("candurl")
 candidate_file = context.params.get("candfile")
 candidate_text = context.params.get("candtext")
 
 # Process local PDFs
+job_profile_pdf_text = None
+candidate_cv_pdf_text = None
+
 if job_file:
     script_dir = os.getcwd()
     rel_path = job_file
     job_file_path = os.path.join(script_dir, rel_path)
     job_profile_pdf_text = extract_text_from_pdf(job_file_path)
-    print(job_profile_pdf_text)
+    print(f"Job PDF Text: {job_profile_pdf_text}")
 else:
     print(f"Job file not provided: {job_file}")
-    job_profile_pdf_text = None
 
 if candidate_file:
     script_dir = os.getcwd()
     rel_path = candidate_file
     cand_file_path = os.path.join(script_dir, rel_path)
     candidate_cv_pdf_text = extract_text_from_pdf(cand_file_path)
-    print(candidate_cv_pdf_text)
+    print(f"Candidate PDF Text: {candidate_cv_pdf_text}")
 else:
     print(f"Candidate file not provided: {candidate_file}")
-    candidate_cv_pdf_text = None
 
-# Process job and candidate URLs
-job_profile_url_text = extract_text_from_url(job_url) if job_url else None
-candidate_cv_url_text = extract_text_from_url(candidate_url) if candidate_url else None
+# Process URLs
+job_profile_url_text = None
+candidate_cv_url_text = None
 
-if not (job_url or job_file or job_text):
+if job_url:
+    job_profile_url_text = extract_text_from_url(job_url)
+    print(f"Job URL Text: {job_profile_url_text}")
+else:
+    print("Job URL not provided")
+
+if candidate_url:
+    candidate_cv_url_text = extract_text_from_url(candidate_url)
+    print(f"Candidate URL Text: {candidate_cv_url_text}")
+else:
+    print("Candidate URL not provided")
+
+# Combine all job profile text inputs
+job_profile_text = job_text or job_profile_pdf_text or job_profile_url_text
+candidate_profile_text = candidate_text or candidate_cv_pdf_text or candidate_cv_url_text
+
+# Ensure at least one input is provided
+if not job_profile_text:
     print("At least one of the three inputs needs to be provided for Job!")
-if not (candidate_url or candidate_file or candidate_text):
+if not candidate_profile_text:
     print("At least one of the three inputs needs to be provided for Candidate!")
 
+# Send event with all gathered parameters
 context.events.send(
     "ferris.apps.hr.job_cand_params",
     context.package.name,
     {
-        "job": job,
+        "job": job_name,
         "job_industry": job_industry,
         "job_url": job_url,
         "job_file": job_profile_pdf_text,
-        "job_text": job_profile_url_text,
-        "candidate": candidate,
+        "job_text": job_profile_text,
+        "candidate": candidate_name,
         "candidate_industry": candidate_industry,
         "candidate_url": candidate_url,
         "candidate_file": candidate_cv_pdf_text,
-        "candidate_text": candidate_cv_url_text,
+        "candidate_text": candidate_profile_text,
     }
 )
 
-print(f"Issuing a skills extraction and classification for {job} and {candidate}.")
+print(f"Issuing a skills extraction and classification for {job_name} and {candidate_name}.")
 print(f"Sending skills event for next step.")
