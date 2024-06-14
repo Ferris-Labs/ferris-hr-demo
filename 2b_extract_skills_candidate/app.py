@@ -1,6 +1,6 @@
 import os
 import json
-import openai
+from openai import OpenAI
 from ferris_ef import context
 
 candidate_name = context.params.get("candidate")
@@ -38,7 +38,7 @@ def extract_and_classify_skills(text, industry):
         f"Candidate description:\n{text}"
     )
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completion.create(
             model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}]
         )

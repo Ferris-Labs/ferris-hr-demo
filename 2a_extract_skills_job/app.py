@@ -1,6 +1,6 @@
 import os
 import json
-import openai
+from openai import OpenAI
 from ferris_ef import context
 
 job_name = context.params.get("job")
@@ -12,7 +12,7 @@ job_text = context.params.get("job_text") or ""
 
 # Setup LangChain with OpenAI API
 oai_key = context.secrets.get('OpenAI')['OPENAI_API_KEY']
-openai.api_key = oai_key
+client = OpenAI(api_key=oai_key)
 
 def normalize_keys(data):
     """Normalize keys in a dictionary to lowercase with underscores."""
@@ -38,7 +38,7 @@ def extract_and_classify_skills(text, industry):
         f"{text}"
     )
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completion.create(
             model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}]
         )
