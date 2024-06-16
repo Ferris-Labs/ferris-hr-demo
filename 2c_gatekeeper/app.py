@@ -42,7 +42,9 @@ def main():
             "candidate_industry": context.params.get('candidate_industry'),
             "candidate_hard_skills": context.params.get('candidate_hard_skills'),
             "candidate_soft_skills": context.params.get('candidate_soft_skills'),
-            "candidate_language_skills": context.params.get('candidate_language_skills')
+            "candidate_language_skills": context.params.get('candidate_language_skills'),
+            "candidate_experience": context.params.get("experience", [])
+
         }
         context.state.put('cand_data', data)
     

@@ -59,7 +59,7 @@ async def main():
     extracted_skills = await extract_and_classify_skills(job_profile_text, job_industry)
 
     # Logging the extracted skills for debugging purposes
-    print(f"Extracted Skills Raw Output: {extracted_skills}")
+    # print(f"Extracted Skills Raw Output: {extracted_skills}")
 
     if extracted_skills:
         try:
