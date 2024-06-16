@@ -1,6 +1,6 @@
 import json
 import asyncio
-from openai import AsyncOpenAI
+from openai import AsyncOpenAI\
 from ferris_ef import context
 
 # Setup OpenAI API & Client
@@ -10,7 +10,7 @@ client = AsyncOpenAI(api_key=oai_key)
 # Function to get skill matching response
 async def get_skill_matching_response(prompt):
     try:
-        response = await openai.ChatCompletion.acreate(
+        response = await client.chat.completions.create(
             model="gpt-4-turbo",
             messages=[{"role": "user", "content": prompt}],
         )
