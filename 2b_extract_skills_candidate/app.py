@@ -29,7 +29,7 @@ async def extract_and_classify_skills(text, industry):
         "into four categories: hard skills, soft skills, language skills, and experience. Eliminate all redundancies so each skill "
         "only shows up at most once in either category. Exclude any terms that are not skills from the skills entries. Ensure that "
         "results are provided as a raw JSON key-value dictionary with no further complementary or cautionary text. "
-        "Structure the JSON as follows:\n"
+        "Structure the JSON as follows and do not change the key names:\n"
         "{\n"
         '  "hard_skills": ["hard_skill1", "hard_skill2", ...],\n'
         '  "soft_skills": ["soft_skill1", "soft_skill2", ...],\n'
