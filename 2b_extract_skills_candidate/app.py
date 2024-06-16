@@ -58,12 +58,12 @@ async def main():
     extracted_skills = await extract_and_classify_skills(cand_profile_text, candidate_industry)
 
     # Logging the extracted skills for debugging purposes
-    print("Extracted Skills Raw Output:")
-    print(extracted_skills)
+    print(f"Extracted Skills Raw Output: {extracted_skills}")
 
     if extracted_skills:
         try:
             extracted_skills = extracted_skills.strip()
+            print(f"Processed Output for JSON Loading: {extracted_skills}")
             skills_dict = json.loads(extracted_skills)
         except json.JSONDecodeError as e:
             print(f"JSON decode error: {e}")
