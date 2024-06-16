@@ -1,6 +1,6 @@
 import json
 import asyncio
-from openai import AsyncOpenAI\
+from openai import AsyncOpenAI
 from ferris_ef import context
 
 # Setup OpenAI API & Client
