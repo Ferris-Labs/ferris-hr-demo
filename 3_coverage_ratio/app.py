@@ -60,6 +60,10 @@ async def main():
     # Get the response from OpenAI
     skill_matching_response = await get_skill_matching_response(prompt)
     print("Response Type:", type(skill_matching_response))
+    skill_matching_response = skill_matching_response.strip()
+    if skill_matching_response.startswith("```json") and skill_matching_response.endswith("```"):
+        skill_matching_response = skill_matching_response[7:-3].strip()
+
     response_dict = json.loads(skill_matching_response)
 
     # Output handling
