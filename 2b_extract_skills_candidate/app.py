@@ -63,6 +63,8 @@ async def main():
     if extracted_skills:
         try:
             extracted_skills = extracted_skills.strip()
+            if extracted_skills.startswith("```json") and extracted_skills.endswith("```"):
+                extracted_skills = extracted_skills[7:-3].strip()
             print(f"Processed Output for JSON Loading: {extracted_skills}")
             skills_dict = json.loads(extracted_skills)
         except json.JSONDecodeError as e:
