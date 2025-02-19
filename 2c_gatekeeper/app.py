@@ -3,17 +3,25 @@ from ferris_cli.v2 import FerrisEvents
 from ferris_ef import context
 
 def send_event(job_data, cand_data):
-    context.events.send(
-        "ferris.apps.hr.coverage_ratio",
-        context.package.name,
-        {
-            'job_data': job_data,
-            'cand_data': cand_data
-        }
-    )
-    print("Job Data: ", job_data)
-    print("Candidate Data: ", cand_data)
-    print("Job and Candidate profiling step completed, Trigger Event: hr_coverage_ratio")
+    try:
+        print(f"Attempting to send event ferris.apps.hr.coverage_ratio")
+        print(f"Sender: {context.package.name}")
+        print(f"Payload: {json.dumps({'job_data': job_data, 'cand_data': cand_data}, indent=2)}")
+        
+        context.events.send(
+            "ferris.apps.hr.coverage_ratio",
+            context.package.name,
+            {
+                'job_data': job_data,
+                'cand_data': cand_data
+            }
+        )
+        print(f"Event ferris.apps.hr.coverage_ratio sent successfully")
+        print("Job Data: ", job_data)
+        print("Candidate Data: ", cand_data)
+    except Exception as e:
+        print(f"Error sending event: {str(e)}")
+        raise  # Re-raise the exception to ensure it's properly logged in the system
 
 
 def main():
@@ -62,10 +70,10 @@ def main():
         cand_payload = state.get('cand_data')
 
         send_event(job_payload, cand_payload)
-        # Reset State to Clean
-        context.state.put('seen_events', [])
-        context.state.put('job_data', [])
-        context.state.put('cand_data', [])
+        # Reset State by removing the keys entirely
+        context.state.delete('seen_events')
+        context.state.delete('job_data')
+        context.state.delete('cand_data')
     else:
         print("Waiting for both job and candidate data to be available.")
 
