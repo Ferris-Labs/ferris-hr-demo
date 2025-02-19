@@ -79,22 +79,60 @@ job_profile_pdf_text = None
 candidate_cv_pdf_text = None
 
 if job_file:
-    script_dir = os.getcwd()
-    rel_path = job_file
-    job_file_path = os.path.join(script_dir, rel_path)
-    job_profile_pdf_text = extract_text_from_pdf(job_file_path)
-    print(f"Job PDF Text: {job_profile_pdf_text}")
+    try:
+        # Try different possible paths for the uploaded file
+        possible_paths = [
+            job_file,  # Direct path
+            os.path.join(os.getcwd(), job_file),  # Current working directory
+            os.path.join('/tmp', job_file),  # Temp directory
+            os.path.join(os.path.dirname(__file__), job_file),  # Script directory
+            os.path.join('/app', job_file)  # Container app directory
+        ]
+        
+        job_file_path = None
+        for path in possible_paths:
+            print(f"Checking job file path: {path}")
+            if os.path.exists(path):
+                job_file_path = path
+                break
+        
+        if job_file_path:
+            job_profile_pdf_text = extract_text_from_pdf(job_file_path)
+            print(f"Successfully read job PDF from: {job_file_path}")
+        else:
+            print(f"Job file not found in any of these locations: {possible_paths}")
+    except Exception as e:
+        print(f"Error processing job file: {str(e)}")
 else:
-    print(f"Job file not provided: {job_file}")
+    print("No job file provided")
 
 if candidate_file:
-    script_dir = os.getcwd()
-    rel_path = candidate_file
-    cand_file_path = os.path.join(script_dir, rel_path)
-    candidate_cv_pdf_text = extract_text_from_pdf(cand_file_path)
-    print(f"Candidate PDF Text: {candidate_cv_pdf_text}")
+    try:
+        # Try different possible paths for the uploaded file
+        possible_paths = [
+            candidate_file,  # Direct path
+            os.path.join(os.getcwd(), candidate_file),  # Current working directory
+            os.path.join('/tmp', candidate_file),  # Temp directory
+            os.path.join(os.path.dirname(__file__), candidate_file),  # Script directory
+            os.path.join('/app', candidate_file)  # Container app directory
+        ]
+        
+        cand_file_path = None
+        for path in possible_paths:
+            print(f"Checking candidate file path: {path}")
+            if os.path.exists(path):
+                cand_file_path = path
+                break
+        
+        if cand_file_path:
+            candidate_cv_pdf_text = extract_text_from_pdf(cand_file_path)
+            print(f"Successfully read candidate PDF from: {cand_file_path}")
+        else:
+            print(f"Candidate file not found in any of these locations: {possible_paths}")
+    except Exception as e:
+        print(f"Error processing candidate file: {str(e)}")
 else:
-    print(f"Candidate file not provided: {candidate_file}")
+    print("No candidate file provided")
 
 # Process URLs
 job_profile_url_text = None
@@ -116,39 +154,53 @@ else:
 job_profile_text = job_text or job_profile_pdf_text or job_profile_url_text
 candidate_profile_text = candidate_text or candidate_cv_pdf_text or candidate_cv_url_text
 
-# Ensure at least one input is provided
+# Validate and send events with better error handling
+success = True
+
 if not job_profile_text:
-    print("At least one of the three inputs needs to be provided for Job!")
+    print("ERROR: No job description provided in any format (text, file, or URL)")
+    success = False
+else:
+    try:
+        context.events.send(
+            "ferris.apps.hr.job_params",
+            context.package.name,
+            {
+                "job": job_name,
+                "job_industry": job_industry,
+                "job_url": job_url,
+                "job_file": job_profile_pdf_text,
+                "job_text": job_profile_text,
+            }
+        )
+        print(f"Successfully sent job data for {job_name}")
+    except Exception as e:
+        print(f"ERROR sending job data: {str(e)}")
+        success = False
+
 if not candidate_profile_text:
-    print("At least one of the three inputs needs to be provided for Candidate!")
+    print("ERROR: No candidate description provided in any format (text, file, or URL)")
+    success = False
+else:
+    try:
+        context.events.send(
+            "ferris.apps.hr.candidate_params",
+            context.package.name,
+            {
+                "candidate": candidate_name,
+                "candidate_industry": candidate_industry,
+                "candidate_url": candidate_url,
+                "candidate_file": candidate_cv_pdf_text,
+                "candidate_text": candidate_profile_text,
+            }
+        )
+        print(f"Successfully sent candidate data for {candidate_name}")
+    except Exception as e:
+        print(f"ERROR sending candidate data: {str(e)}")
+        success = False
 
-# Split into two separate events for job and candidate
-if job_profile_text:
-    context.events.send(
-        "ferris.apps.hr.job_params",
-        context.package.name,
-        {
-            "job": job_name,
-            "job_industry": job_industry,
-            "job_url": job_url,
-            "job_file": job_profile_pdf_text,
-            "job_text": job_profile_text,
-        }
-    )
-    print(f"Sending job data for {job_name}")
-
-if candidate_profile_text:
-    context.events.send(
-        "ferris.apps.hr.candidate_params",
-        context.package.name,
-        {
-            "candidate": candidate_name,
-            "candidate_industry": candidate_industry,
-            "candidate_url": candidate_url,
-            "candidate_file": candidate_cv_pdf_text,
-            "candidate_text": candidate_profile_text,
-        }
-    )
-    print(f"Sending candidate data for {candidate_name}")
-
-print("Data collection completed.")
+if success:
+    print("Data collection completed successfully - both job and candidate data sent")
+else:
+    print("Data collection completed with errors - check logs above")
+    raise ValueError("Failed to send one or both required events")
