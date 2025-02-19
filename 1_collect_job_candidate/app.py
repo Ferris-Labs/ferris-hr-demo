@@ -122,23 +122,33 @@ if not job_profile_text:
 if not candidate_profile_text:
     print("At least one of the three inputs needs to be provided for Candidate!")
 
-# Send event with all gathered parameters
-context.events.send(
-    "ferris.apps.hr.job_cand_params",
-    context.package.name,
-    {
-        "job": job_name,
-        "job_industry": job_industry,
-        "job_url": job_url,
-        "job_file": job_profile_pdf_text,
-        "job_text": job_profile_text,
-        "candidate": candidate_name,
-        "candidate_industry": candidate_industry,
-        "candidate_url": candidate_url,
-        "candidate_file": candidate_cv_pdf_text,
-        "candidate_text": candidate_profile_text,
-    }
-)
+# Split into two separate events for job and candidate
+if job_profile_text:
+    context.events.send(
+        "ferris.apps.hr.job_params",
+        context.package.name,
+        {
+            "job": job_name,
+            "job_industry": job_industry,
+            "job_url": job_url,
+            "job_file": job_profile_pdf_text,
+            "job_text": job_profile_text,
+        }
+    )
+    print(f"Sending job data for {job_name}")
 
-print(f"Issuing a skills extraction and classification for {job_name} and {candidate_name}.")
-print(f"Sending skills event for next step.")
+if candidate_profile_text:
+    context.events.send(
+        "ferris.apps.hr.candidate_params",
+        context.package.name,
+        {
+            "candidate": candidate_name,
+            "candidate_industry": candidate_industry,
+            "candidate_url": candidate_url,
+            "candidate_file": candidate_cv_pdf_text,
+            "candidate_text": candidate_profile_text,
+        }
+    )
+    print(f"Sending candidate data for {candidate_name}")
+
+print("Data collection completed.")

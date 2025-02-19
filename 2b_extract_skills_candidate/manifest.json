@@ -4,6 +4,6 @@
   "allow_manual_triggering": true,
   "active": true,
   "tags": ["HRTech", "LLM", "Skills"],
-  "trigger_events": ["ferris.apps.hr.job_cand_params"],
+  "trigger_events": ["ferris.apps.hr.candidate_params"],
   "output_events": ["ferris.apps.hr.cand_extract"]
 }
