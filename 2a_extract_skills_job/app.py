@@ -52,16 +52,19 @@ async def extract_and_classify_skills(text, industry):
 
 # Main async function to execute the workflow
 async def main():
-    # Concat job profile text from the environment params
-    job_profile_text = job_text or job_file or job_url
+    try:
+        # Concat job profile text from the environment params
+        job_profile_text = job_text or job_file or job_url
+        
+        if not job_profile_text:
+            raise ValueError("No job description provided in any format (text, file, or URL)")
 
-    # Extract and classify skills
-    extracted_skills = await extract_and_classify_skills(job_profile_text, job_industry)
+        # Extract and classify skills
+        extracted_skills = await extract_and_classify_skills(job_profile_text, job_industry)
 
-    # Logging the extracted skills for debugging purposes
-    # print(f"Extracted Skills Raw Output: {extracted_skills}")
+        if not extracted_skills:
+            raise ValueError("No skills were extracted from the job description")
 
-    if extracted_skills:
         try:
             extracted_skills = extracted_skills.strip()
             if extracted_skills.startswith("```json") and extracted_skills.endswith("```"):
@@ -69,38 +72,42 @@ async def main():
             print(f"Stripped Skills for JSON parsing: {extracted_skills}")
             skills_dict = json.loads(extracted_skills)
         except json.JSONDecodeError as e:
-            print(f"JSON decode error: {e}")
-            skills_dict = {}
+            raise ValueError(f"Failed to parse extracted skills as JSON: {str(e)}")
 
-        print(skills_dict)
+        if not any([
+            skills_dict.get("hard_skills", []),
+            skills_dict.get("soft_skills", []),
+            skills_dict.get("language_skills", [])
+        ]):
+            raise ValueError("No valid skills found in any category")
 
-        if skills_dict.get("hard_skills", []) or skills_dict.get("soft_skills", []) or skills_dict.get("language_skills", []):
-            context.events.send(
-                "ferris.apps.hr.job_extract",
-                context.package.name,
-                {
-                    "job": job_name,
-                    "job_industry": job_industry,
-                    "job_hard_skills": skills_dict.get("hard_skills", []),
-                    "job_soft_skills": skills_dict.get("soft_skills", []),
-                    "job_language_skills": skills_dict.get("language_skills", [])
-                }
-            )
-            print("Job profiling step completed, Trigger Event: hr_coverage_ratio")
-        else:
-            error_message = "Could not extract any skills from Job inputs."
-            print(error_message)
-            context.events.send(
-                "ferris.apps.hr.job_error",
-                context.package.name,
-                {
-                    "job": job_name,
-                    "job_parsed_text": job_profile_text,
-                }
-            )
-            print("Step Completed - Error")
-    else:
-        print("No skills were extracted.")
+        # Send success event
+        context.events.send(
+            "ferris.apps.hr.job_extract",
+            context.package.name,
+            {
+                "job": job_name,
+                "job_industry": job_industry,
+                "job_hard_skills": skills_dict.get("hard_skills", []),
+                "job_soft_skills": skills_dict.get("soft_skills", []),
+                "job_language_skills": skills_dict.get("language_skills", [])
+            }
+        )
+        print("Job profiling completed successfully")
+
+    except Exception as e:
+        error_message = str(e)
+        print(f"Error in job processing: {error_message}")
+        context.events.send(
+            "ferris.apps.hr.job_error",
+            context.package.name,
+            {
+                "job": job_name,
+                "job_parsed_text": job_profile_text if 'job_profile_text' in locals() else "",
+                "error": error_message
+            }
+        )
+        print("Step Completed - Error")
 
 # Run the main function
 if __name__ == "__main__":
