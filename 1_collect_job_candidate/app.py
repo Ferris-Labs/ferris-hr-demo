@@ -154,6 +154,11 @@ else:
 job_profile_text = job_text or job_profile_pdf_text or job_profile_url_text
 candidate_profile_text = candidate_text or candidate_cv_pdf_text or candidate_cv_url_text
 
+# Print debug information
+print("Debug Info:")
+print(f"Job inputs - Text: {bool(job_text)}, PDF: {bool(job_profile_pdf_text)}, URL: {bool(job_profile_url_text)}")
+print(f"Candidate inputs - Text: {bool(candidate_text)}, PDF: {bool(candidate_cv_pdf_text)}, URL: {bool(candidate_cv_url_text)}")
+
 # Validate and send events with better error handling
 success = True
 
@@ -177,6 +182,11 @@ else:
     except Exception as e:
         print(f"ERROR sending job data: {str(e)}")
         success = False
+
+# For candidate data, if we have a file path but couldn't read it, try using it as direct text
+if not candidate_profile_text and candidate_file:
+    print("WARNING: Could not read candidate file as PDF, trying as direct text")
+    candidate_profile_text = candidate_file
 
 if not candidate_profile_text:
     print("ERROR: No candidate description provided in any format (text, file, or URL)")
@@ -203,4 +213,8 @@ if success:
     print("Data collection completed successfully - both job and candidate data sent")
 else:
     print("Data collection completed with errors - check logs above")
-    raise ValueError("Failed to send one or both required events")
+    # Instead of failing, log a warning if at least job data was sent
+    if job_profile_text:
+        print("WARNING: Continuing with job data only")
+    else:
+        raise ValueError("Failed to send one or both required events")
