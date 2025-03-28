@@ -5,5 +5,5 @@
   "active": true,
   "tags": ["HRTech", "LLM", "Skills"],
   "trigger_events": [],
-  "output_events": ["ferris.apps.hr.job_params", "ferris.apps.hr.candidate_params"]
+  "output_events": []
 }
