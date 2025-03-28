@@ -138,25 +138,67 @@ job_profile_url_text = None
 candidate_cv_url_text = None
 
 if job_url:
-    job_profile_url_text = extract_text_from_url(job_url)
-    print(f"Job URL Text: {job_profile_url_text}")
+    try:
+        job_profile_url_text = extract_text_from_url(job_url)
+        if job_profile_url_text:
+            print(f"Successfully extracted text from job URL")
+        else:
+            print(f"Failed to extract text from job URL: {job_url}")
+    except Exception as e:
+        print(f"Error processing job URL: {str(e)}")
 else:
     print("Job URL not provided")
 
 if candidate_url:
-    candidate_cv_url_text = extract_text_from_url(candidate_url)
-    print(f"Candidate URL Text: {candidate_cv_url_text}")
+    try:
+        candidate_cv_url_text = extract_text_from_url(candidate_url)
+        if candidate_cv_url_text:
+            print(f"Successfully extracted text from candidate URL")
+        else:
+            print(f"Failed to extract text from candidate URL: {candidate_url}")
+    except Exception as e:
+        print(f"Error processing candidate URL: {str(e)}")
 else:
     print("Candidate URL not provided")
 
-# Combine all job profile text inputs
-job_profile_text = job_text or job_profile_pdf_text or job_profile_url_text
-candidate_profile_text = candidate_text or candidate_cv_pdf_text or candidate_cv_url_text
+# Combine all job profile text inputs with better logging
+print("\nProcessing inputs:")
+print(f"Job text input: {bool(job_text)}")
+print(f"Job PDF text: {bool(job_profile_pdf_text)}")
+print(f"Job URL text: {bool(job_profile_url_text)}")
 
-# Print debug information
-print("Debug Info:")
-print(f"Job inputs - Text: {bool(job_text)}, PDF: {bool(job_profile_pdf_text)}, URL: {bool(job_profile_url_text)}")
-print(f"Candidate inputs - Text: {bool(candidate_text)}, PDF: {bool(candidate_cv_pdf_text)}, URL: {bool(candidate_cv_url_text)}")
+print(f"Candidate text input: {bool(candidate_text)}")
+print(f"Candidate PDF text: {bool(candidate_cv_pdf_text)}")
+print(f"Candidate URL text: {bool(candidate_cv_url_text)}")
+
+# Combine all job profile text inputs with priority order
+job_profile_text = None
+if job_text:
+    job_profile_text = job_text
+    print("Using direct job text input")
+elif job_profile_pdf_text:
+    job_profile_text = job_profile_pdf_text
+    print("Using job PDF text")
+elif job_profile_url_text:
+    job_profile_text = job_profile_url_text
+    print("Using job URL text")
+
+# Combine all candidate profile text inputs with priority order
+candidate_profile_text = None
+if candidate_text:
+    candidate_profile_text = candidate_text
+    print("Using direct candidate text input")
+elif candidate_cv_pdf_text:
+    candidate_profile_text = candidate_cv_pdf_text
+    print("Using candidate PDF text")
+elif candidate_cv_url_text:
+    candidate_profile_text = candidate_cv_url_text
+    print("Using candidate URL text")
+
+# For candidate data, if we have a file path but couldn't read it, try using it as direct text
+if not candidate_profile_text and candidate_file:
+    print("WARNING: Could not read candidate file as PDF, trying as direct text")
+    candidate_profile_text = candidate_file
 
 # Validate and send events with better error handling
 success = True
@@ -182,11 +224,6 @@ else:
         print(f"ERROR sending job data: {str(e)}")
         success = False
 
-# For candidate data, if we have a file path but couldn't read it, try using it as direct text
-if not candidate_profile_text and candidate_file:
-    print("WARNING: Could not read candidate file as PDF, trying as direct text")
-    candidate_profile_text = candidate_file
-
 if not candidate_profile_text:
     print("ERROR: No candidate description provided in any format (text, file, or URL)")
     success = False
@@ -208,12 +245,8 @@ else:
         print(f"ERROR sending candidate data: {str(e)}")
         success = False
 
-if success:
-    print("Data collection completed successfully - both job and candidate data sent")
-else:
+if not success:
     print("Data collection completed with errors - check logs above")
-    # Instead of failing, log a warning if at least job data was sent
-    if job_profile_text:
-        print("WARNING: Continuing with job data only")
-    else:
-        raise ValueError("Failed to send one or both required events")
+    raise ValueError("Failed to send required events")
+else:
+    print("Data collection completed successfully")
