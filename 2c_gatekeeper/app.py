@@ -1,5 +1,4 @@
 import json
-import time
 from ferris_cli.v2 import FerrisEvents
 from ferris_ef import context
 
@@ -30,39 +29,38 @@ def main():
     predefined_events = ["ferris.apps.hr.job_extract", "ferris.apps.hr.cand_extract"]
     error_events = ["ferris.apps.hr.job_error", "ferris.apps.hr.cand_error"]
 
-    # Get the current execution ID to ensure we're tracking events for this run only
-    current_exec_id = context.params.get('_fxparentexec')
-    
     # Retrieve the current state
     state = context.state.get()
     print("Current state:", state)
     
     # Initialize state if needed
-    if 'executions' not in state:
-        state['executions'] = {}
-    if current_exec_id not in state['executions']:
-        state['executions'][current_exec_id] = {
+    if 'events' not in state:
+        state['events'] = {
             'seen_events': [],
             'job_data': None,
             'cand_data': None
         }
     
-    # Get state for current execution
-    exec_state = state['executions'][current_exec_id]
+    # Get event state
+    event_state = state['events']
     
     # Retrieve the incoming event type
     incoming_event = context.params.get('origin_event_type')
-    print(f"Processing event {incoming_event} for execution {current_exec_id}")
+    print(f"Processing event {incoming_event}")
 
-    # If we receive an error event, clear the state for this execution
+    # If we receive an error event, clear the state
     if incoming_event in error_events:
-        print(f"Received error event: {incoming_event}. Clearing state for execution {current_exec_id}")
-        del state['executions'][current_exec_id]
-        context.state.put('executions', state['executions'])
+        print(f"Received error event: {incoming_event}. Clearing state.")
+        state['events'] = {
+            'seen_events': [],
+            'job_data': None,
+            'cand_data': None
+        }
+        context.state.put('events', state['events'])
         return
 
     if incoming_event == 'ferris.apps.hr.job_extract':
-        exec_state['job_data'] = {
+        event_state['job_data'] = {
             "job_name": context.params.get('job'),
             "job_industry": context.params.get('job_industry'),
             "job_hard_skills": context.params.get('job_hard_skills'),
@@ -71,7 +69,7 @@ def main():
         }
 
     if incoming_event == 'ferris.apps.hr.cand_extract':
-        exec_state['cand_data'] = {
+        event_state['cand_data'] = {
             "candidate_name": context.params.get('candidate'),
             "candidate_industry": context.params.get('candidate_industry'),
             "candidate_hard_skills": context.params.get('candidate_hard_skills'),
@@ -81,19 +79,19 @@ def main():
         }
     
     # Add the incoming event to the 'seen_events' array if not already present
-    if incoming_event in predefined_events and incoming_event not in exec_state['seen_events']:
-        exec_state['seen_events'].append(incoming_event)
+    if incoming_event in predefined_events and incoming_event not in event_state['seen_events']:
+        event_state['seen_events'].append(incoming_event)
     
     # Update state
-    state['executions'][current_exec_id] = exec_state
-    context.state.put('executions', state['executions'])
+    state['events'] = event_state
+    context.state.put('events', state['events'])
 
-    # Check if all predefined events are seen for this execution
-    if all(event in exec_state['seen_events'] for event in predefined_events):
-        print(f"All events received for execution {current_exec_id}")
+    # Check if all predefined events are seen
+    if all(event in event_state['seen_events'] for event in predefined_events):
+        print(f"All events received: {event_state['seen_events']}")
         
-        job_payload = exec_state['job_data']
-        cand_payload = exec_state['cand_data']
+        job_payload = event_state['job_data']
+        cand_payload = event_state['cand_data']
 
         if not job_payload or not cand_payload:
             print("Missing required data. Job or Candidate data is empty.")
@@ -102,13 +100,16 @@ def main():
         # Send event
         send_event(job_payload, cand_payload)
         
-        # Only clean up state if this is the second event (i.e., we've seen both events)
-        if len(exec_state['seen_events']) == 2:
-            print(f"Cleaning up state for execution {current_exec_id}")
-            del state['executions'][current_exec_id]
-            context.state.put('executions', state['executions'])
+        # Clean up state after sending the event
+        print("Cleaning up state")
+        state['events'] = {
+            'seen_events': [],
+            'job_data': None,
+            'cand_data': None
+        }
+        context.state.put('events', state['events'])
     else:
-        print(f"Waiting for remaining events. Current events: {exec_state['seen_events']}")
+        print(f"Waiting for remaining events. Current events: {event_state['seen_events']}")
 
 main()
 
