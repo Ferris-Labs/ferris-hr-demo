@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import requests
 from io import BytesIO
 from ferris_ef import context
-from ferris_cli.v2 import FerrisEvents
 
 # Function to extract text from PDF
 def extract_text_from_pdf(pdf_path):

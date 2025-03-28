@@ -105,8 +105,5 @@ def main():
     else:
         print(f"Waiting for remaining events. Current events: {exec_state['seen_events']}")
 
-    # Clean up old executions (optional, helps prevent state bloat)
-    cleanup_old_executions(state)
-
 main()
 
