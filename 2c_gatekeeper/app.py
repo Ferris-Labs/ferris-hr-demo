@@ -88,41 +88,27 @@ def main():
     state['executions'][current_exec_id] = exec_state
     context.state.put('executions', state['executions'])
 
-    # Wait loop to ensure both events are received
-    max_wait_time = 300  # 5 minutes maximum wait time
-    wait_interval = 5    # Check every 5 seconds
-    start_time = time.time()
+    # Check if all predefined events are seen for this execution
+    if all(event in exec_state['seen_events'] for event in predefined_events):
+        print(f"All events received for execution {current_exec_id}")
+        
+        job_payload = exec_state['job_data']
+        cand_payload = exec_state['cand_data']
 
-    while True:
-        # Check if we've exceeded the maximum wait time
-        if time.time() - start_time > max_wait_time:
-            print(f"Timeout waiting for events after {max_wait_time} seconds")
-            print(f"Current events received: {exec_state['seen_events']}")
+        if not job_payload or not cand_payload:
+            print("Missing required data. Job or Candidate data is empty.")
             return
 
-        # Check if all predefined events are seen for this execution
-        if all(event in exec_state['seen_events'] for event in predefined_events):
-            print(f"All events received for execution {current_exec_id}")
-            
-            job_payload = exec_state['job_data']
-            cand_payload = exec_state['cand_data']
-
-            if not job_payload or not cand_payload:
-                print("Missing required data. Job or Candidate data is empty.")
-                return
-
-            # Send event and clean up state
-            send_event(job_payload, cand_payload)
+        # Send event
+        send_event(job_payload, cand_payload)
+        
+        # Only clean up state if this is the second event (i.e., we've seen both events)
+        if len(exec_state['seen_events']) == 2:
+            print(f"Cleaning up state for execution {current_exec_id}")
             del state['executions'][current_exec_id]
             context.state.put('executions', state['executions'])
-            return
-
+    else:
         print(f"Waiting for remaining events. Current events: {exec_state['seen_events']}")
-        time.sleep(wait_interval)
-
-        # Refresh state to check for new events
-        state = context.state.get()
-        exec_state = state['executions'][current_exec_id]
 
 main()
 
